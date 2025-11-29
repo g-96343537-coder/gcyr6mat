@@ -3,72 +3,129 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>六年级数学模拟练习</title>
-<!-- MathJax CDN -->
+<title>六年级数学选择题测验</title>
+<!-- MathJax 用于公式渲染 -->
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
 <style>
 body {
-  font-family: "Comic Neue", sans-serif;
-  font-size: 14px;
-  background: url('https://d1csarkz8obe9u.cloudfront.net/posterpreviews/powerpoint-math-for-kids-background-design-template-9c7101e6f62f51589b70148f650f4f6e_screen.jpg?ts=1737411341') no-repeat center center fixed;
+  font-family: "ZCOOL KuaiLe", "Microsoft YaHei", sans-serif;
+  font-size: 18px; 
+  background: url('https://wallpaperaccess.com/full/454196.jpg') no-repeat center center fixed;
   background-size: cover;
   padding: 20px;
   color: #000;
+  overflow-x: hidden;
 }
+
+/* 主标题 */
 h1 {
-  font-size: 2rem;
+  font-size: 2.4rem;
   text-align: center;
   margin-bottom: 20px;
 }
+
+/* 页码 */
 #q-index {
-  font-size: 1.2rem;
-  margin-bottom: 12px;
-}
-#question {
   font-size: 1.6rem;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
+
+/* 浮现层：覆盖题目和选项 */
+#quiz-container {
+  background: rgba(255,255,255,0.85);
+  padding: 24px 28px;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35), 0 0 20px rgba(255,255,255,0.2) inset;
+  backdrop-filter: blur(6px);
+  max-width: 900px;
+  margin: auto;
+  opacity: 0.8;
+  animation: fadeIn 0.8s forwards, floatUpDown 3s ease-in-out infinite alternate;
+}
+
+/* 渐显动画 */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 轻微漂浮动画 */
+@keyframes floatUpDown {
+  0% { transform: translateY(0px); }
+  100% { transform: translateY(-6px); }
+}
+
+/* 题目 */
+#question {
+  font-size: 2rem;
+  margin-bottom: 25px;
+}
+
+/* 选项浮现框 */
 .opt {
-  font-size: 1.5rem;
-  padding: 12px 18px;
-  margin-bottom: 14px;
-  border-radius: 12px;
-  border: 2px solid #d0d0d0;
-  background: rgba(255,255,255,0.9);
+  font-size: 2.1rem;
+  padding: 16px 22px;
+  margin-bottom: 18px;
+  border-radius: 16px;
+  border: 3px solid #d0d0d0;
+  background: rgba(255,255,255,0.95);
   cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.opt:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.3);
 }
 .opt.correct { background: rgba(90, 220, 100,0.9); border-color: #56d56c; }
 .opt.wrong { background: rgba(255, 200, 200,0.9); border-color: #ff7b7b; }
-#nextBtn {
-  font-size: 1.4rem;
-  padding: 12px 24px;
+
+/* 按钮样式 */
+#nextBtn, #finishBtn {
+  font-size: 1.8rem;
+  padding: 14px 28px;
   background: #7dbbff;
   border: none;
-  border-radius: 12px;
+  border-radius: 14px;
   cursor: pointer;
-  margin-top: 18px;
+  margin-top: 20px;
 }
+#finishBtn { display:none; }
 #restart {
-  font-size: 1.1rem;
-  padding: 6px 14px;
-  margin-left: 10px;
-}
-.score {
   font-size: 1.3rem;
-  margin-top: 12px;
+  padding: 8px 18px;
+  margin-left: 12px;
+}
+
+/* 分数和结果 */
+.score {
+  font-size: 1.6rem;
+  margin-top: 15px;
+}
+#result {
+  margin-top: 25px;
+  font-size: 2rem;
+  font-weight: bold;
+  text-align: center;
+  color: #1a1a1a;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
 }
 </style>
 </head>
 <body>
-<h1>六年级数学模拟练习</h1>
-<div id="q-index">第 <span id="cur">1</span> / <span id="total">0</span> 题</div>
-<div id="question"></div>
-<div id="options"></div>
-<div class="controls">
-  <div class="score" id="score">得分：0</div>
-  <button id="nextBtn" disabled>下一题</button>
-  <button id="restart">重做</button>
+<h1>六年级数学选择题测验</h1>
+
+<div id="quiz-container">
+  <div id="q-index">第 <span id="cur">1</span> / <span id="total">0</span> 题</div>
+  <div id="question"></div>
+  <div id="options"></div>
+  <div class="controls">
+    <div class="score" id="score">得分：0</div>
+    <button id="nextBtn" disabled>下一题</button>
+    <button id="finishBtn">完成测验</button>
+    <button id="restart">重做</button>
+  </div>
+  <div id="result"></div>
 </div>
 
 <script>
@@ -76,34 +133,34 @@ h1 {
 const rawData = `
 1,把 3 050 409 写成文字。A. 三百万五万零四百零九 B. 三百零五万零四百零九 C. 三百五十万四千零九 D. 三百零五万四千零九,B
 2,下列哪个数目是合数 (Composite Number)？A. 2 B. 13 C. 21 D. 19,C
-3,2.4 \\text{百万} + 350\,000 = A. 590\,000 B. 2\,435\,000 C. 2\,750\,000 D. 5\,900\,000,C
-4,4 \\div \\frac{2}{5} = A. 10 B. 8 C. \\frac{8}{5} D. \\frac{2}{5},A
-5,1 \\frac{1}{4} \\times \\frac{2}{5} = A. \\frac{1}{4} B. \\frac{1}{2} C. \\frac{3}{4} D. 1 \\frac{1}{2},B
-6,2.5 \\times 1.2 = A. 3.0 B. 3.5 C. 30.0 D. 35.0,A
-7,4.8 \\div 0.6 = A. 0.08 B. 0.8 C. 8 D. 80,C
-8,150 的 20\\% 是多少？A. 3 B. 30 C. 35 D. 300,B
-9,哪个百分比的值最大？A. 200 的 10\\% B. 100 的 25\\% C. 50 的 60\\% D. 20 的 120\\%,C
-10,一双鞋子的成本是 RM 50，售价是 RM 75。计算盈利的百分比。A. 20\\% B. 25\\% C. 50\\% D. 75\\%,C
-11,什么是负债 (Liability)？A. 银行里的存款 B. 拥有的房子 C. 欠信用卡的钱 D. 投资获得的股息,C
-12,陈先生以 RM 4000 买入一批货物，如果你想获得 20\\% 的利润，售价应定为多少？A. RM 800 B. RM 3200 C. RM 4200 D. RM 4800,D
-13,现在的时刻是 1400 时。巴黎的时间比马来西亚慢 7 小时。巴黎现在是什么时刻？A. 0700 时 B. 0800 时 C. 2100 时 D. 2200 时,A
-14,小明用 2 小时 15 分钟完成了一份试卷，他在 11:30 a.m. 开始作答。请问他在什么时刻完成？A. 1:15 p.m. B. 1:30 p.m. C. 1:45 p.m. D. 2:00 p.m.,C
-15,3.5\\,\\text{km} + 450\\,\\text{m} = A. 3.95\\,\\text{km} B. 4.95\\,\\text{km} C. 3950\\,\\text{km} D. 8000\\,\\text{m},A
-16,5 包米的质量是 12.5\\,\\text{kg}。8 包同样的米质量是多少？A. 2.5\\,\\text{kg} B. 16\\,\\text{kg} C. 20\\,\\text{kg} D. 25\\,\\text{kg},C
-17,一瓶果汁有 1.25\\,\\text{L}。妈妈买了 4 瓶，共多少升？A. 4.0\\,\\text{L} B. 4.5\\,\\text{L} C. 5.0\\,\\text{L} D. 6.0\\,\\text{L},C
-18,一个圆的半径为7cm，计算它的直径。 \(d=2r\)A. 3.5 cm B. 14 cm C. 21 cm D. 49 cm,B
-19,正六边形 (Regular Hexagon) 的内角总和是多少度？A. 180° B. 360° C. 540° D. 720°,D
-20,哪个图形的内角总和是 360 度？A. 三角形 B. 四边形 C. 五边形 D. 六边形,B
-21,一个长方体，长 10\\,\\text{cm}，宽 5\\,\\text{cm}，高 4\\,\\text{cm}。计算其表面积。A. 110 cm^2 B. 200 cm^2 C. 220 cm^2 D. 400 cm^2,C
-22,计算半径为 10cm 的圆的面积。 (A=\\pi r^2, \\pi\\approx3.14)A. 31.4 cm^2 B. 62.8 cm^2 C. 314 cm^2 D. 628 cm^2,C
-23,坐标平面上，点 P 的坐标是 (2, 3)，点 Q 的坐标是 (2, 9)。P 和 Q 之间的距离是多少单位？\(d=|y_2-y_1|\) A. 2 B. 4 C. 6 D. 12,C
-24,橙汁与苹果汁的体积比是 3:7。如果橙汁有 600\\,\\text{ml}，苹果汁有多少 ml？A. 200 ml B. 1400 ml C. 1800 ml D. 2100 ml,B
-25,哪个事件不可发生的？A. 掷骰子得到数字 7 B. 明天会下雨 C. 抛硬币得到正面 D. 太阳从东方升起,A
-26,盒子里有 3 个红球和 7 个蓝球。抽到红球的可能性是什么？A. 不可能 B. 可能性小 C. 可能性大 D. 肯定,B
-27,一组数据的平均数 (Mean) 是 15。数据共有 4 个。这组数据的总和是多少？A. 19 B. 45 C. 60 D. 75,C
-28,饼分图 (Pie Chart) 显示全班有 40 人。喜欢游泳的学生占了 25\\%。喜欢游泳的学生有多少人？A. 10 B. 15 C. 20 D. 25,A
-29,12 - 4.5 \\div 0.5 = A. 3 B. 15 C. 23 D. 24,A
-30,甲城市在乙城市的北方。丙城市在乙城市的东方。连接这三个城市会形成什么形状？A. 直角三角形 B. 等边三角形 C. 正方形 D. 长方形,A
+3,2.4 百万 + 350000 = ? A. 590000 B. 2435000 C. 2750000 D. 5900000,C
+4,4 ÷ \\(\\frac{2}{5}\\) = ? A. 10 B. 8 C. \\(\\frac{8}{5}\\) D. \\(\\frac{2}{5}\\),A
+5,计算分数：\\(1\\frac{1}{4} \\times\\frac{2}{5}\\) A. \\(\\frac{1}{4}\\) B. \\(\\frac{1}{2}\\) C. \\(\\frac{4}{3}\\) D. \\(1\\frac{1}{2}\\),B
+6,2.5 × 1.2 = ? A. 3.0 B. 3.5 C. 30.0 D. 35.0,A
+7,4.8 ÷ 0.6 = ? A. 0.08 B. 0.8 C. 8 D. 80,C
+8,150 的 20% 是多少？ A. 3 B. 30 C. 35 D. 300,B
+9,哪个百分比的值最大？ A. 200 的 10% B. 100 的 25% C. 50 的 60% D. 20 的 120%,C
+10,鞋子成本 RM 50，售价 RM 75。盈利百分比是多少？ A. 20% B. 25% C. 50% D. 75%,C
+11,什么是负债 (Liability)？ A. 银行存款 B. 拥有的房子 C. 欠信用卡的钱 D. 投资获得的股息,C
+12,陈先生以 RM 4000 买货，如果想获得 20% 利润，售价应为多少？ A. RM 800 B. RM 3200 C. RM 4200 D. RM 4800,D
+13,马来西亚时间 14:00，巴黎比马来西亚慢 7 小时。巴黎现在是？ A. 07:00 B. 08:00 C. 21:00 D. 22:00,A
+14,小明 11:30 开始做试卷，耗时 2 小时 15 分钟。完成时间是？ A. 13:15 B. 13:30 C. 13:45 D. 14:00,C
+15,3.5 km + 450 m = ? A. 3.95 km B. 4.95 km C. 3950 km D. 8000 m,A
+16,5 包米 12.5 kg，8 包米重量是多少？ A. 2.5 kg B. 16 kg C. 20 kg D. 25 kg,C
+17,一瓶果汁 1.25 L，买 4 瓶共多少 L？ A. 4.0 L B. 4.5 L C. 5.0 L D. 6.0 L,C
+18,一个圆半径 7 cm，计算此圆直径。 A. 3.5 cm B. 14 cm C. 21 cm D. 49 cm,B
+19,正六边形内角总和是多少度？ A. 180° B. 360° C. 540° D. 720°,D
+20,哪个图形内角和是 360°？ A. 三角形 B. 四边形 C. 五边形 D. 六边形,B
+21,长方体长 10 cm，宽 5 cm，高 4 cm，表面积是多少？ A. 110 cm² B. 200 cm² C. 220 cm² D. 400 cm²,C
+22,一个正方体的边长是 6 cm，一个长方体的底面积是 18 cm²。已知这两个立体的体积相同，请问长方体的高是多少？ A. 6cm B. 10cm C. 12cm D. 36cm,C
+23,在笛卡尔平面 上，点 P 的坐标是 (3, 5)。如果把点 P向右移动 4 个单位，再向下移动 2 个单位到达点 Q。请问点 Q的坐标是多少？ A. (7, 3) B. (7, 7) C. (1, 3) D. (3, 3),A
+24,橙汁:苹果汁 = 3:7，橙汁 600 ml，苹果汁多少 ml？ A. 200 B. 1400 C. 1800 D. 2100,B
+25,哪个事件不可发生？ A. 掷骰子 7 B. 明天下雨 C. 抛硬币正面 D. 太阳东升,A
+26,盒子里 3 红球、7 蓝球。抽红球可能性？ A. 不可能 B. 可能性小 C. 可能性大 D. 肯定,B
+27,平均数 15，数据 4 个，总和是多少？ A. 19 B. 45 C. 60 D. 75,C
+28,饼图显示全班 40 人，25% 喜欢游泳，人数多少？ A. 10 B. 15 C. 20 D. 25,A
+29,计算 12 - 4.5 ÷ 0.5 = ? A. 3 B. 15 C. 23 D. 24,A
+30,甲在乙北方，丙在乙东方，连接三城形成的形状？ A. 直角三角形 B. 等边三角形 C. 正方形 D. 长方形,A
 `;
 
 // ====== 解析 CSV ======
@@ -112,12 +169,15 @@ const data = rawData.trim().split("\n").map(line=>{
   const answer = parts.pop().trim().toUpperCase();
   const qid = parts.shift();
   const full = parts.join(",").trim();
+
   const optStart = full.indexOf("A.");
   const qtext = full.slice(0, optStart).trim();
   const optRaw = full.slice(optStart);
+
   const optParts = optRaw.split(/\s(?=[A-D]\.\s)/).map(s=>s.trim());
   const opts = optParts.map(op => op.replace(/^[A-D]\.\s*/, ""));
   while (opts.length < 4) opts.push("(缺失)");
+
   return { q: qtext, options: opts, answer: {A:0,B:1,C:2,D:3}[answer] };
 });
 
@@ -128,18 +188,22 @@ document.getElementById('total').textContent = data.length;
 function loadQuestion(){
   answered=false;
   document.getElementById('nextBtn').disabled = true;
+  document.getElementById('finishBtn').style.display = 'none';
+  document.getElementById('result').textContent = '';
   const q = data[current];
-  document.getElementById('question').innerHTML = `\\(${q.q}\\)`;
+  document.getElementById('question').innerHTML = q.q;
   document.getElementById('cur').textContent = current+1;
+
   const optsDiv = document.getElementById('options');
   optsDiv.innerHTML = '';
   q.options.forEach((opt,i)=>{
     const div = document.createElement('div');
     div.className='opt';
-    div.innerHTML = `\\(${opt}\\)`;
+    div.innerHTML = opt;
     div.addEventListener('click',()=>selectOption(div,i));
     optsDiv.appendChild(div);
   });
+
   MathJax.typesetPromise();
 }
 
@@ -149,24 +213,35 @@ function selectOption(el,index){
   const q = data[current];
   const all = document.querySelectorAll('.opt');
   all.forEach((d,i)=>{ if(i===q.answer) d.classList.add('correct'); });
-  if(index!==q.answer) el.classList.add('wrong'); else score++;
-  document.getElementById('score').textContent='得分：'+score;
-  document.getElementById('nextBtn').disabled=false;
+  if(index!==q.answer) el.classList.add('wrong');
+  else score++;
+  document.getElementById('score').textContent='得分：'+score+' / '+data.length;
+
+  if(current === data.length-1){
+    document.getElementById('finishBtn').style.display='inline-block';
+    document.getElementById('nextBtn').style.display='none';
+  } else {
+    document.getElementById('nextBtn').disabled=false;
+  }
 }
 
 document.getElementById('nextBtn').addEventListener('click',()=>{
   current++;
-  if(current>=data.length){
-    alert('测验结束！ 总得分：' + score);
-    return;
-  }
   loadQuestion();
 });
+
+document.getElementById('finishBtn').addEventListener('click',()=>{
+  document.getElementById('result').textContent = `🎉 太棒啦！你完成了测验，总得分：${score} / ${data.length} 💪 继续努力，让自己更棒！🌟`;
+  document.getElementById('finishBtn').style.display='none';
+});
+
 document.getElementById('restart').addEventListener('click',()=>{
   if(confirm('确定重做测验吗？')){
     current=0;
     score=0;
-    document.getElementById('score').textContent='得分：0';
+    document.getElementById('score').textContent='得分：0 / '+data.length;
+    document.getElementById('nextBtn').style.display='inline-block';
+    document.getElementById('nextBtn').disabled=true;
     loadQuestion();
   }
 });
