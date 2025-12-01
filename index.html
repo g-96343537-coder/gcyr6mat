@@ -3,8 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>六年级数学选择题测验</title>
-<!-- MathJax 用于公式渲染 -->
+<title>五年级数学选择题测验</title>
+<script>
+  window.MathJax = {
+    tex: { inlineMath: [['\\(', '\\)']] },
+    startup: {
+      pageReady: () => {
+        return MathJax.startup.defaultPageReady();
+      }
+    }
+  };
+</script>
 <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <style>
 body {
@@ -15,121 +24,188 @@ body {
   padding: 20px;
   color: #000;
   overflow-x: hidden;
+  min-height: 100vh;
 }
 
 /* 主标题 */
 h1 {
-  font-size: 2.4rem;
+  font-size: 2.2rem;
   text-align: center;
   margin-bottom: 20px;
+  text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
 }
 
 /* 页码 */
 #q-index {
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   margin-bottom: 15px;
+  color: #444;
 }
 
-/* 浮现层：覆盖题目和选项 */
+/* 浮现层 */
 #quiz-container {
-  background: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.9);
   padding: 24px 28px;
   border-radius: 20px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.35), 0 0 20px rgba(255,255,255,0.2) inset;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
   backdrop-filter: blur(6px);
-  max-width: 900px;
+  max-width: 800px;
   margin: auto;
-  opacity: 0.8;
-  animation: fadeIn 0.8s forwards, floatUpDown 3s ease-in-out infinite alternate;
+  animation: fadeIn 0.8s forwards;
 }
 
-/* 渐显动画 */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* 轻微漂浮动画 */
-@keyframes floatUpDown {
-  0% { transform: translateY(0px); }
-  100% { transform: translateY(-6px); }
-}
-
 /* 题目 */
 #question {
-  font-size: 2rem;
+  font-size: 1.8rem;
   margin-bottom: 25px;
+  line-height: 1.6;
+  font-weight: bold;
 }
 
-/* 选项浮现框 */
+/* 选项 */
 .opt {
-  font-size: 2.1rem;
-  padding: 16px 22px;
-  margin-bottom: 18px;
-  border-radius: 16px;
-  border: 3px solid #d0d0d0;
-  background: rgba(255,255,255,0.95);
+  font-size: 1.6rem;
+  padding: 14px 20px;
+  margin-bottom: 15px;
+  border-radius: 12px;
+  border: 2px solid #d0d0d0;
+  background: #fff;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: all 0.2s;
 }
 .opt:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+  transform: translateY(-2px);
+  border-color: #7dbbff;
+  background: #f0f8ff;
 }
-.opt.correct { background: rgba(90, 220, 100,0.9); border-color: #56d56c; }
-.opt.wrong { background: rgba(255, 200, 200,0.9); border-color: #ff7b7b; }
+.opt:active {
+  transform: scale(0.98);
+}
+.opt.correct { background: #d4edda; border-color: #28a745; color: #155724; }
+.opt.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+.opt.disabled { pointer-events: none; }
 
-/* 按钮样式 */
-#nextBtn, #finishBtn {
-  font-size: 1.8rem;
-  padding: 14px 28px;
-  background: #7dbbff;
+/* 按钮 */
+button {
+  font-family: inherit;
+}
+#nextBtn, #finishBtn, #startQuiz {
+  font-size: 1.5rem;
+  padding: 12px 30px;
+  background: linear-gradient(135deg, #7dbbff, #5ca8ff);
+  color: white;
   border: none;
-  border-radius: 14px;
+  border-radius: 50px;
   cursor: pointer;
   margin-top: 20px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  transition: transform 0.1s;
+  width: 100%;
+  max-width: 300px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
-#finishBtn { display:none; }
+#nextBtn:active, #finishBtn:active { transform: scale(0.95); }
+#nextBtn:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; }
+#finishBtn { display:none; background: linear-gradient(135deg, #42e695, #3bb2b8); }
+
 #restart {
-  font-size: 1.3rem;
-  padding: 8px 18px;
-  margin-left: 12px;
+  font-size: 1.1rem;
+  padding: 8px 15px;
+  background: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-top: 20px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* 分数和结果 */
+/* 输入框 */
+#student-info { text-align: center; }
+#student-info label { display: block; margin: 20px 0; font-size: 1.5rem; }
+#student-info input, #student-info select {
+  font-size: 1.2rem;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  width: 80%;
+  max-width: 300px;
+}
+
+/* 结果 */
 .score {
-  font-size: 1.6rem;
-  margin-top: 15px;
+  font-size: 1.4rem;
+  margin-top: 20px;
+  text-align: center;
+  color: #555;
 }
 #result {
   margin-top: 25px;
-  font-size: 2rem;
+  font-size: 1.8rem;
   font-weight: bold;
   text-align: center;
   color: #1a1a1a;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+}
+#upload-status {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 1.2rem;
 }
 </style>
 </head>
 <body>
-<h1>六年级数学选择题测验</h1>
+<h1>五年级数学选择题测验</h1>
 
 <div id="quiz-container">
-  <div id="q-index">第 <span id="cur">1</span> / <span id="total">0</span> 题</div>
-  <div id="question"></div>
-  <div id="options"></div>
-  <div class="controls">
-    <div class="score" id="score">得分：0</div>
-    <button id="nextBtn" disabled>下一题</button>
-    <button id="finishBtn">完成测验</button>
-    <button id="restart">重做</button>
+  <div id="student-info">
+    <label>姓名：<br>
+      <input type="text" id="studentName" placeholder="请输入你的名字">
+    </label>
+    <label>班级：<br>
+      <select id="studentClass">
+        <option value="">请选择班级</option>
+        <option value="6M">6M</option>
+        <option value="6K">6K</option>
+        <option value="6B">6B</option>
+        <option value="6H">6H</option>
+        <option value="6J">6J</option>
+        <option value="6U">6U</option>
+        <option value="6P">6P</option>
+        <option value="6C">6C</option>
+      </select>
+    </label>
+    <button id="startQuiz">开始测验</button>
   </div>
-  <div id="result"></div>
+
+  <div id="quiz-content" style="display:none;">
+    <div id="q-index">第 <span id="cur">1</span> / <span id="total">0</span> 题</div>
+    <div id="question"></div>
+    <div id="options"></div>
+    <div class="controls">
+      <div class="score" id="score">得分：0</div>
+      <button id="nextBtn" disabled>下一题</button>
+      <button id="finishBtn">完成测验</button>
+      <button id="restart">重做</button>
+    </div>
+    <div id="result"></div>
+    <div id="upload-status"></div>
+  </div>
 </div>
 
 <script>
-// ====== 题库（LaTeX版） ======
+// ====== Google Apps Script URL ======
+const scriptURL = "https://script.google.com/macros/s/AKfycbxr167kexQhL5n1N34JZiSkZKpiZUKd151ejO_4JgUuoK-MLDQafhow6LtGzuumdO3IjQ/exec";
+
+// ====== 题库 ======
 const rawData = `
 1,把 3 050 409 写成文字。A. 三百万五万零四百零九 B. 三百零五万零四百零九 C. 三百五十万四千零九 D. 三百零五万四千零九,B
 2,下列哪个数目是合数 (Composite Number)？A. 2 B. 13 C. 21 D. 19,C
@@ -163,90 +239,159 @@ const rawData = `
 30,甲在乙北方，丙在乙东方，连接三城形成的形状？ A. 直角三角形 B. 等边三角形 C. 正方形 D. 长方形,A
 `;
 
-// ====== 解析 CSV ======
+// ====== 解析 CSV 逻辑 (稳健版) ======
 const data = rawData.trim().split("\n").map(line=>{
+  if(!line) return null;
   const parts = line.split(",");
-  const answer = parts.pop().trim().toUpperCase();
-  const qid = parts.shift();
-  const full = parts.join(",").trim();
-
-  const optStart = full.indexOf("A.");
-  const qtext = full.slice(0, optStart).trim();
-  const optRaw = full.slice(optStart);
-
+  const answerChar = parts.pop().trim().toUpperCase(); 
+  const qid = parts.shift(); 
+  const fullContent = parts.join(","); 
+  
+  const optStart = fullContent.indexOf("A.");
+  const qtext = fullContent.slice(0, optStart).trim();
+  const optRaw = fullContent.slice(optStart);
+  
   const optParts = optRaw.split(/\s(?=[A-D]\.\s)/).map(s=>s.trim());
   const opts = optParts.map(op => op.replace(/^[A-D]\.\s*/, ""));
+  
   while (opts.length < 4) opts.push("(缺失)");
+  
+  return { q: qtext, options: opts, answer: {A:0,B:1,C:2,D:3}[answerChar] };
+}).filter(item => item !== null);
 
-  return { q: qtext, options: opts, answer: {A:0,B:1,C:2,D:3}[answer] };
-});
+// ====== 测验逻辑 ======
+let current = 0;
+let score = 0;
+let answered = false;
 
-// ====== 显示题目 ======
-let current=0, score=0, answered=false;
 document.getElementById('total').textContent = data.length;
 
 function loadQuestion(){
-  answered=false;
+  answered = false;
   document.getElementById('nextBtn').disabled = true;
   document.getElementById('finishBtn').style.display = 'none';
   document.getElementById('result').textContent = '';
+  document.getElementById('upload-status').textContent = '';
+  
   const q = data[current];
-  document.getElementById('question').innerHTML = q.q;
-  document.getElementById('cur').textContent = current+1;
+  document.getElementById('cur').textContent = current + 1;
+  
+  const qDiv = document.getElementById('question');
+  qDiv.innerHTML = q.q;
 
   const optsDiv = document.getElementById('options');
   optsDiv.innerHTML = '';
+  
   q.options.forEach((opt,i)=>{
     const div = document.createElement('div');
-    div.className='opt';
+    div.className = 'opt';
     div.innerHTML = opt;
-    div.addEventListener('click',()=>selectOption(div,i));
+    div.addEventListener('click', () => selectOption(div, i));
     optsDiv.appendChild(div);
   });
 
-  MathJax.typesetPromise();
-}
-
-function selectOption(el,index){
-  if(answered) return;
-  answered=true;
-  const q = data[current];
-  const all = document.querySelectorAll('.opt');
-  all.forEach((d,i)=>{ if(i===q.answer) d.classList.add('correct'); });
-  if(index!==q.answer) el.classList.add('wrong');
-  else score++;
-  document.getElementById('score').textContent='得分：'+score+' / '+data.length;
-
-  if(current === data.length-1){
-    document.getElementById('finishBtn').style.display='inline-block';
-    document.getElementById('nextBtn').style.display='none';
-  } else {
-    document.getElementById('nextBtn').disabled=false;
+  if (window.MathJax) {
+    MathJax.typesetPromise([qDiv, optsDiv]).catch((err) => console.log('MathJax error:', err));
   }
 }
 
-document.getElementById('nextBtn').addEventListener('click',()=>{
+function selectOption(el, index){
+  if(answered) return;
+  answered = true;
+  const q = data[current];
+  
+  const all = document.querySelectorAll('.opt');
+  all.forEach(d => d.classList.add('disabled'));
+
+  all.forEach((d, i) => { 
+    if(i === q.answer) d.classList.add('correct'); 
+  });
+
+  if(index !== q.answer) {
+    el.classList.add('wrong');
+  } else {
+    score++;
+  }
+  document.getElementById('score').textContent = '得分：' + score;
+
+  if(current === data.length - 1){
+    document.getElementById('finishBtn').style.display = 'inline-block';
+    document.getElementById('nextBtn').style.display = 'none';
+  } else {
+    document.getElementById('nextBtn').disabled = false;
+  }
+}
+
+// 事件绑定
+document.getElementById('nextBtn').addEventListener('click', () => {
   current++;
   loadQuestion();
 });
 
-document.getElementById('finishBtn').addEventListener('click',()=>{
-  document.getElementById('result').textContent = `🎉 太棒啦！你完成了测验，总得分：${score} / ${data.length} 💪 继续努力，让自己更棒！🌟`;
-  document.getElementById('finishBtn').style.display='none';
+document.getElementById('finishBtn').addEventListener('click', () => {
+  const finishBtn = document.getElementById('finishBtn');
+  const resultDiv = document.getElementById('result');
+  const statusDiv = document.getElementById('upload-status');
+  
+  finishBtn.disabled = true;
+  finishBtn.textContent = '正在保存...';
+  
+  const formData = new URLSearchParams();
+  formData.append('name', studentName);
+  formData.append('class', studentClass);
+  formData.append('score', score);
+  formData.append('total', data.length);
+  
+  fetch(scriptURL, {
+    method: 'POST',
+    mode: 'no-cors', 
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: formData
+  })
+  .then(() => {
+    resultDiv.innerHTML = `🎉 测验结束！<br>${studentName}<br>总得分：<span style="color:#007bff">${score} / ${data.length}</span>`;
+    statusDiv.textContent = "✅ 成绩已发送给老师！";
+    finishBtn.style.display = 'none'; 
+  })
+  .catch((error) => {
+    console.error('Upload Error:', error);
+    resultDiv.textContent = `测验结束。得分：${score}`;
+    statusDiv.innerHTML = `<span style="color:red">⚠️ 成绩上传失败，请截图发给老师。</span>`;
+    finishBtn.textContent = '重试上传';
+    finishBtn.disabled = false;
+  });
 });
 
-document.getElementById('restart').addEventListener('click',()=>{
-  if(confirm('确定重做测验吗？')){
-    current=0;
-    score=0;
-    document.getElementById('score').textContent='得分：0 / '+data.length;
-    document.getElementById('nextBtn').style.display='inline-block';
-    document.getElementById('nextBtn').disabled=true;
+document.getElementById('restart').addEventListener('click', () => {
+  if(confirm('确定重做测验吗？成绩将重新计算。')){
+    current = 0;
+    score = 0;
+    document.getElementById('score').textContent = '得分：0';
+    document.getElementById('nextBtn').style.display = 'inline-block'; 
+    document.getElementById('finishBtn').style.display = 'none';
     loadQuestion();
   }
 });
 
-loadQuestion();
+// 学生信息页逻辑
+let studentName = '';
+let studentClass = '';
+
+document.getElementById('startQuiz').addEventListener('click', () => {
+  const nameInput = document.getElementById('studentName').value.trim();
+  const classSelect = document.getElementById('studentClass').value;
+  
+  if(!nameInput || !classSelect){
+    alert('请填写姓名并选择班级！');
+    return;
+  }
+  studentName = nameInput;
+  studentClass = classSelect;
+
+  document.getElementById('student-info').style.display = 'none';
+  document.getElementById('quiz-content').style.display = 'block';
+  loadQuestion();
+});
 </script>
 </body>
 </html>
